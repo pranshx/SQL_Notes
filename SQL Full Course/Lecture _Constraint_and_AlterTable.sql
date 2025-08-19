@@ -1,0 +1,102 @@
+USE constraint_altertable;
+-- UNIQUE
+CREATE TABLE contacts (
+	name VARCHAR(100) NOT NULL,
+    phone VARCHAR(15) UNIQUE
+);
+INSERT INTO contacts (name, phone)
+VALUES ('billybob', '8781213455');
+INSERT INTO contacts (name, phone) -- This insert would result in an error:
+VALUES ('billybob', '8781213455');
+
+INSERT INTO contacts (name) -- NULL VALUES DO NOT ADHERE UNIQUE CONTRAINT
+VALUES ('billybob');
+INSERT INTO contacts (name, phone)
+VALUES ('billybob', NULL);
+-- UNIQUE END
+
+-- CHECK
+CREATE TABLE users (
+	username VARCHAR(20) NOT NULL CHECK (username NOT IN ('ALEX')),
+    age INT,
+    CHECK (age > 0)
+);
+CREATE TABLE palindromes (
+  word VARCHAR(100) CHECK(REVERSE(word) = word)
+);
+-- CHECK END
+
+-- NAMED CONSTRAINT -- RETURN NAMED CHECK ERROR
+CREATE TABLE users2 (
+    username VARCHAR(20) NOT NULL,
+    age INT,
+    CONSTRAINT age_not_negative CHECK (age >= 0)
+);
+ 
+CREATE TABLE palindromes2 (
+  word VARCHAR(100),
+  CONSTRAINT word_is_palindrome CHECK(REVERSE(word) = word)
+);
+-- NAMED CONSTRAINT END
+
+-- MULTIPLE COLUMN CONTRAINT
+CREATE TABLE companies (
+    name VARCHAR(255) NOT NULL,
+    address VARCHAR(255) NOT NULL, 
+    CONSTRAINT name_address UNIQUE (name , address) -- NAME AND ADRESS COMBINED SHOULD BE UNIQUE
+);
+ 
+CREATE TABLE houses (
+  purchase_price INT NOT NULL,
+  sale_price INT NOT NULL,
+  CONSTRAINT sprice_gt_pprice CHECK(sale_price >= purchase_price)
+);
+-- MULTIPLE COLUMN CONTRAINT END
+
+-- ALTER 
+
+-- ADD COLUMN
+ALTER TABLE companies
+ADD COLUMN city VARCHAR(20);
+
+ALTER TABLE companies
+ADD city2 VARCHAR(20); -- MENTIONING COLUMN IS OPTIONAL
+
+ALTER TABLE companies
+ADD COLUMN employee_count INT NOT NULL; -- IF WE PUT NOT NULL IN CONTRAINT IT WILL BY DEFAULT 0 AS A VALUE IN EACH CELL
+ALTER TABLE companies
+ADD COLUMN employee_count INT NOT NULL DEFAULT 1; -- WE HAVE DEFINED 1 AS DEFAULT HERE
+-- ADD COLUMN END
+
+-- DROP COLUMN
+ALTER TABLE companies DROP COLUMN city2;
+-- DROP COLUMN END
+
+-- RENAMING TABLE
+RENAME TABLE companies to suppliers;
+ALTER TABLE suppliers 
+RENAME TO companies;
+-- RENAMING TABLE END
+
+-- RENAMING COLUMNS
+ALTER TABLE companies
+RENAME COLUMN city TO city_town; -- WRITTING COLUMN IN QUERY IS REQUIED
+-- RENAMING COLUMN END
+
+-- MODIFYING COLUMN
+ALTER TABLE companies
+MODIFY city_town VARCHAR(100);
+
+ALTER TABLE companies
+MODIFY company_name VARCHAR(100) DEFAULT 'unknown';
+-- CHANGE TO RENAME AND CAHNGE DATA TYPE AT ONCE
+ALTER TABLE suppliers
+CHANGE business biz_name VARCHAR(50); -- CAHNGE OLD_COLUMN_NAME NEW_COLUMN_NAME DATA_TYPE
+-- MODIFYING COLUMN END
+
+-- ADDING AND DROPING CONSTRAINT -- WE NEED TO HAVE NAMED CONSTRAINT FOR THIS
+ALTER TABLE houses 
+ADD CONSTRAINT positive_pprice CHECK (purchase_price >= 0);
+
+ALTER TABLE houses DROP CONSTRAINT positive_pprice;
+-- ADDING AND DROPING CONSTRAINT END
